@@ -47,7 +47,7 @@ class AnalysisWindow(QtWidgets.QWidget):
         super().__init__()
 
         self.app = app
-        self.setWindowTitle("Sweep analysis")
+        self.setWindowTitle("Анализ измерения")
         self.setWindowIcon(self.app.icon)
 
         QtGui.QShortcut(QtCore.Qt.Key.Key_Escape, self, self.hide)
@@ -55,47 +55,51 @@ class AnalysisWindow(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout()
         make_scrollable(self, layout)
 
-        select_analysis_box = QtWidgets.QGroupBox("Select analysis")
+        select_analysis_box = QtWidgets.QGroupBox("Выбрать анализ")
         select_analysis_layout = QtWidgets.QFormLayout(select_analysis_box)
         self.analysis_list = QtWidgets.QComboBox()
-        self.analysis_list.addItem("Low-pass filter", LowPassAnalysis(self.app))
         self.analysis_list.addItem(
-            "Band-pass filter", BandPassAnalysis(self.app)
+            "Фильтр низких частот", LowPassAnalysis(self.app)
         )
         self.analysis_list.addItem(
-            "High-pass filter", HighPassAnalysis(self.app)
+            "Фильтр высоких частот", HighPassAnalysis(self.app)
         )
         self.analysis_list.addItem(
-            "Band-stop filter", BandStopAnalysis(self.app)
+            "Полосовой фильтр", BandPassAnalysis(self.app)
         )
         self.analysis_list.addItem(
-            "Simple Peak search", SimplePeakSearchAnalysis(self.app)
+            "Режекторный фильтр", BandStopAnalysis(self.app)
         )
-        self.analysis_list.addItem("Peak search", PeakSearchAnalysis(self.app))
-        self.analysis_list.addItem("VSWR analysis", VSWRAnalysis(self.app))
         self.analysis_list.addItem(
-            "Resonance analysis", ResonanceAnalysis(self.app)
+            "Простой поиск пика", SimplePeakSearchAnalysis(self.app)
         )
-        self.analysis_list.addItem("HWEF analysis", EFHWAnalysis(self.app))
+        self.analysis_list.addItem("Поиск пика", PeakSearchAnalysis(self.app))
+        self.analysis_list.addItem("Анализ КСВН", VSWRAnalysis(self.app))
         self.analysis_list.addItem(
-            "MagLoop analysis", MagLoopAnalysis(self.app)
+            "Анализ резонанса", ResonanceAnalysis(self.app)
         )
-        select_analysis_layout.addRow("Analysis type", self.analysis_list)
+        self.analysis_list.addItem(
+            "Анализ HWEF антенны", EFHWAnalysis(self.app)
+        )
+        self.analysis_list.addItem(
+            "Анализ MagLoop антенны", MagLoopAnalysis(self.app)
+        )
+        select_analysis_layout.addRow("Тип анализа", self.analysis_list)
         self.analysis_list.currentIndexChanged.connect(self.updateSelection)
 
-        btn_run_analysis = QtWidgets.QPushButton("Run analysis")
+        btn_run_analysis = QtWidgets.QPushButton("Запустить анализ")
         btn_run_analysis.clicked.connect(self.runAnalysis)
         select_analysis_layout.addRow(btn_run_analysis)
 
         self.checkbox_run_automatically = QtWidgets.QCheckBox(
-            "Run automatically"
+            "Запускать автоматически"
         )
         self.checkbox_run_automatically.stateChanged.connect(
             self.toggleAutomaticRun
         )
         select_analysis_layout.addRow(self.checkbox_run_automatically)
 
-        analysis_box = QtWidgets.QGroupBox("Analysis")
+        analysis_box = QtWidgets.QGroupBox("Анализ")
         analysis_box.setSizePolicy(
             QtWidgets.QSizePolicy.Policy.MinimumExpanding,
             QtWidgets.QSizePolicy.Policy.MinimumExpanding,

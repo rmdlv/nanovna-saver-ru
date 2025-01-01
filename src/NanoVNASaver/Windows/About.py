@@ -37,7 +37,7 @@ class AboutWindow(QtWidgets.QWidget):
         super().__init__()
         self.app = app
 
-        self.setWindowTitle("About NanoVNASaver")
+        self.setWindowTitle("О программе NanoVNASaver")
         self.setWindowIcon(self.app.icon)
 
         top_layout = QtWidgets.QVBoxLayout()
@@ -59,7 +59,7 @@ class AboutWindow(QtWidgets.QWidget):
         upper_layout.addStretch()
 
         info_layout.addWidget(
-            QtWidgets.QLabel(f"NanoVNASaver version {self.app.version}")
+            QtWidgets.QLabel(f"Версия NanoVNASaver {self.app.version}")
         )
         info_layout.addWidget(QtWidgets.QLabel(""))
         info_layout.addWidget(
@@ -79,7 +79,7 @@ class AboutWindow(QtWidgets.QWidget):
         )
         info_layout.addWidget(QtWidgets.QLabel(""))
         link_label = QtWidgets.QLabel(
-            f'For further details, see: <a href="{INFO_URL}">' f"{INFO_URL}"
+            f'Подробнее: <a href="{INFO_URL}">' f"{INFO_URL}"
         )
         link_label.setOpenExternalLinks(True)
         info_layout.addWidget(link_label)
@@ -89,7 +89,7 @@ class AboutWindow(QtWidgets.QWidget):
         top_layout.addLayout(lower_layout)
 
         btn_check_version = QtWidgets.QPushButton(
-            "Check for NanoVNASaver updates"
+            "Проверить NanoVNASaver на наличие обновлений"
         )
         btn_check_version.clicked.connect(self.findUpdates)
 
@@ -104,7 +104,7 @@ class AboutWindow(QtWidgets.QWidget):
         lower_layout.addStretch()
 
         self.versionLabel = QtWidgets.QLabel(
-            "NanoVNA Firmware Version: Not connected."
+            "Версия прошивки NanoVNA: Не подключено."
         )
         lower_layout.addWidget(self.versionLabel)
 
@@ -122,12 +122,12 @@ class AboutWindow(QtWidgets.QWidget):
         with contextlib.suppress(IOError, AttributeError):
             if self.app.vna.connected():
                 self.versionLabel.setText(
-                    f"NanoVNA Firmware Version: {self.app.vna.name} "
+                    f"Версия прошивки NanoVNA: {self.app.vna.name} "
                     f"v{self.app.vna.version}"
                 )
             else:
                 self.versionLabel.setText(
-                    "NanoVNA Firmware Version: Not connected."
+                    "Версия прошивки NanoVNA: Не подключено."
                 )
 
     # attempt to scan the TAGS_URL web page for something that looks like
@@ -161,13 +161,13 @@ class AboutWindow(QtWidgets.QWidget):
             logger.exception(
                 "Checking for updates provided an unparseable file: %s", e
             )
-            self.updateLabel.setText("Data error reading versions.")
+            self.updateLabel.setText("Ошибка чтения данных.")
             return
         except error.URLError as e:
             logger.exception(
                 "Checking for updates produced a URL exception: %s", e
             )
-            self.updateLabel.setText("Connection error.")
+            self.updateLabel.setText("Ошибка подключения.")
             return
 
         if found_latest_version:
@@ -179,21 +179,21 @@ class AboutWindow(QtWidgets.QWidget):
                 if automatic:
                     QtWidgets.QMessageBox.information(
                         self,
-                        "Update available",
-                        f"There is a new update for NanoVNASaver available!\n"
-                        f"Version {latest_version}\n\n"
-                        f'Press "About ..." to find the update.',
+                        "Доступно обновление",
+                        f"Доступно новое обновление для NanoVNASaver!\n"
+                        f"Версия {latest_version}\n\n"
+                        f'Нажмите "О программе ..." чтобы найти обновление.',
                     )
                 else:
                     QtWidgets.QMessageBox.information(
                         self,
-                        "Update available",
-                        "There is a new update for NanoVNASaver available!\n"
-                        f"Version {latest_version}\n\n",
+                        "Доступно обновление",
+                        "Доступно новое обновление для NanoVNASaver!\n"
+                        f"Версия {latest_version}\n\n",
                     )
                 self.updateLabel.setText(
-                    f'<a href="{LATEST_URL}">View release page for version '
-                    f"{latest_version} in browser</a>"
+                    f'<a href="{LATEST_URL}">Открыть страницу релиза '
+                    f"{latest_version} в браузере</a>"
                 )
                 self.updateLabel.setOpenExternalLinks(True)
             else:
@@ -201,7 +201,7 @@ class AboutWindow(QtWidgets.QWidget):
                 # Maybe consider showing it if not an automatic update.
                 #
                 self.updateLabel.setText(
-                    f"NanoVNASaver is up to date as of: "
+                    f"NanoVNASaver актуален на момент "
                     f"{strftime('%Y-%m-%d %H:%M:%S', localtime())}"
                 )
         else:
@@ -209,7 +209,7 @@ class AboutWindow(QtWidgets.QWidget):
             # content! if we get here, something may have changed in the way
             # github creates the .../latest web page.
             self.updateLabel.setText(
-                "ERROR - Unable to determine what the latest version is!"
+                "ОШИБКА - Невозможно определить последнюю версию!"
             )
             logger.error(f"Can't find {TAGS_KEY} in {TAGS_URL} content.")
         return

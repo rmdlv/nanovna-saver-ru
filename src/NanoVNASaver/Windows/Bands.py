@@ -28,7 +28,7 @@ class BandsWindow(QtWidgets.QWidget):
         super().__init__()
 
         self.app = app
-        self.setWindowTitle("Manage bands")
+        self.setWindowTitle("Настройка диапазонов")
         self.setWindowIcon(self.app.icon)
 
         QtGui.QShortcut(QtCore.Qt.Key.Key_Escape, self, self.hide)
@@ -43,9 +43,11 @@ class BandsWindow(QtWidgets.QWidget):
 
         layout.addWidget(self.bands_table)
 
-        btn_add_row = QtWidgets.QPushButton("Add row")
-        btn_delete_row = QtWidgets.QPushButton("Delete row")
-        btn_reset_bands = QtWidgets.QPushButton("Reset bands/Select region")
+        btn_add_row = QtWidgets.QPushButton("Добавить строку")
+        btn_delete_row = QtWidgets.QPushButton("Удалить строку")
+        btn_reset_bands = QtWidgets.QPushButton(
+            "Сбросить диапазоны/Выбрать регион"
+        )
         btn_layout = QtWidgets.QHBoxLayout()
         btn_layout.addWidget(btn_add_row)
         btn_layout.addWidget(btn_delete_row)
@@ -64,18 +66,18 @@ class BandsWindow(QtWidgets.QWidget):
     def resetBands(self):
         confirmBox = QtWidgets.QMessageBox(
             QtWidgets.QMessageBox.Icon.Warning,
-            "Confirm reset",
-            "Are you sure you want to reset the bands to default?",
+            "Подтвердите сброс",
+            "Вы уверены, что хотите сбросить настройки диапазонов?",
             QtWidgets.QMessageBox.StandardButton.Cancel,
         )
         region_1_defaults_button = QtWidgets.QPushButton(
-            "Reset to Region 1 defaults", confirmBox
+            "Сброс к настройкам по умолчанию Региона 1", confirmBox
         )
         region_2_defaults_button = QtWidgets.QPushButton(
-            "Reset to Region 2 defaults", confirmBox
+            "Сброс к настройкам по умолчанию Региона 2", confirmBox
         )
         region_3_defaults_button = QtWidgets.QPushButton(
-            "Reset to Region 3 defaults", confirmBox
+            "Сброс к настройкам по умолчанию Региона 3", confirmBox
         )
         confirmBox.addButton(
             region_1_defaults_button,

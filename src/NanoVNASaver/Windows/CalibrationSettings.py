@@ -30,8 +30,8 @@ from NanoVNASaver.Windows.Defaults import make_scrollable
 logger = logging.getLogger(__name__)
 
 
-def _format_cal_label(size: int, prefix: str = "Set") -> str:
-    return f"{prefix} ({size} points)"
+def _format_cal_label(size: int, prefix: str = "Установлено") -> str:
+    return f"{prefix} ({size} точек)"
 
 
 def getFloatValue(text: str) -> float:
@@ -49,7 +49,7 @@ class CalibrationWindow(QtWidgets.QWidget):
         self.app = app
 
         self.setMinimumWidth(450)
-        self.setWindowTitle("Calibration")
+        self.setWindowTitle("Калибровка")
         self.setWindowIcon(self.app.icon)
         self.setSizePolicy(
             QtWidgets.QSizePolicy.Policy.MinimumExpanding,
@@ -66,34 +66,36 @@ class CalibrationWindow(QtWidgets.QWidget):
 
         make_scrollable(self, top_layout)
 
-        calibration_status_group = QtWidgets.QGroupBox("Active calibration")
+        calibration_status_group = QtWidgets.QGroupBox("Активная калибровка")
         calibration_status_layout = QtWidgets.QFormLayout()
-        self.calibration_status_label = QtWidgets.QLabel("Device calibration")
+        self.calibration_status_label = QtWidgets.QLabel(
+            "Калибровка устройства"
+        )
         self.calibration_source_label = QtWidgets.QLabel("NanoVNA")
         calibration_status_layout.addRow(
-            "Calibration:", self.calibration_status_label
+            "Калибровка:", self.calibration_status_label
         )
         calibration_status_layout.addRow(
-            "Source:", self.calibration_source_label
+            "Источник:", self.calibration_source_label
         )
         calibration_status_group.setLayout(calibration_status_layout)
         left_layout.addWidget(calibration_status_group)
 
-        calibration_control_group = QtWidgets.QGroupBox("Calibrate")
+        calibration_control_group = QtWidgets.QGroupBox("Калибровка")
         calibration_control_layout = QtWidgets.QFormLayout(
             calibration_control_group
         )
         cal_btn = {}
         self.cal_label = {}
         for label_name in (
-            "short",
-            "open",
-            "load",
-            "through",
-            "thrurefl",
-            "isolation",
+            "замкнутая",
+            "открытая",
+            "нагрузочная",
+            "сквозная",
+            "сквозная-отражённая",
+            "изолированная",
         ):
-            self.cal_label[label_name] = QtWidgets.QLabel("Uncalibrated")
+            self.cal_label[label_name] = QtWidgets.QLabel("Не калибровано")
             cal_btn[label_name] = QtWidgets.QPushButton(label_name.capitalize())
             cal_btn[label_name].setMinimumHeight(20)
             cal_btn[label_name].clicked.connect(
@@ -113,21 +115,21 @@ class CalibrationWindow(QtWidgets.QWidget):
 
         calibration_control_layout.addRow(QtWidgets.QLabel(""))
         calibration_control_layout.addRow(
-            "Offset delay", self.input_offset_delay
+            "Задержка смещения", self.input_offset_delay
         )
 
-        self.btn_automatic = QtWidgets.QPushButton("Calibration assistant")
+        self.btn_automatic = QtWidgets.QPushButton("Калибратор")
         self.btn_automatic.setMinimumHeight(20)
         calibration_control_layout.addRow(self.btn_automatic)
         self.btn_automatic.clicked.connect(self.automaticCalibration)
 
         apply_reset_layout = QtWidgets.QHBoxLayout()
 
-        btn_apply = QtWidgets.QPushButton("Apply")
+        btn_apply = QtWidgets.QPushButton("Применить")
         btn_apply.setMinimumHeight(20)
         btn_apply.clicked.connect(self.calculate)
 
-        btn_reset = QtWidgets.QPushButton("Reset")
+        btn_reset = QtWidgets.QPushButton("Сбросить")
         btn_reset.setMinimumHeight(20)
         btn_reset.clicked.connect(self.reset)
 
@@ -138,7 +140,7 @@ class CalibrationWindow(QtWidgets.QWidget):
 
         left_layout.addWidget(calibration_control_group)
 
-        calibration_notes_group = QtWidgets.QGroupBox("Notes")
+        calibration_notes_group = QtWidgets.QGroupBox("Заметки")
         calibration_notes_layout = QtWidgets.QVBoxLayout(
             calibration_notes_group
         )
@@ -147,12 +149,12 @@ class CalibrationWindow(QtWidgets.QWidget):
 
         left_layout.addWidget(calibration_notes_group)
 
-        file_box = QtWidgets.QGroupBox("Files")
+        file_box = QtWidgets.QGroupBox("Файлы")
         file_layout = QtWidgets.QFormLayout(file_box)
-        btn_save_file = QtWidgets.QPushButton("Save calibration")
+        btn_save_file = QtWidgets.QPushButton("Сохранить калибровку")
         btn_save_file.setMinimumHeight(20)
         btn_save_file.clicked.connect(lambda: self.saveCalibration())
-        btn_load_file = QtWidgets.QPushButton("Load calibration")
+        btn_load_file = QtWidgets.QPushButton("Загрузить калибровку")
         btn_load_file.setMinimumHeight(20)
         btn_load_file.clicked.connect(lambda: self.loadCalibration())
 
@@ -164,11 +166,15 @@ class CalibrationWindow(QtWidgets.QWidget):
 
         left_layout.addWidget(file_box)
 
-        cal_standard_box = QtWidgets.QGroupBox("Calibration standards")
+        cal_standard_box = QtWidgets.QGroupBox("Калибровочные стандарты")
         cal_standard_layout = QtWidgets.QFormLayout(cal_standard_box)
-        self.use_ideal_values = QtWidgets.QRadioButton("Use ideal values")
-        self.use_s1p_files = QtWidgets.QRadioButton("Use s1p files")
-        self.use_coefficients = QtWidgets.QRadioButton("Use coefficients")
+        self.use_ideal_values = QtWidgets.QRadioButton(
+            "Использовать идеальные значения"
+        )
+        self.use_s1p_files = QtWidgets.QRadioButton("Использовать s1p файлы")
+        self.use_coefficients = QtWidgets.QRadioButton(
+            "Использовать коэффициенты"
+        )
 
         self.use_ideal_values.setChecked(True)
         self.radio_group = QtWidgets.QButtonGroup(self)
@@ -183,9 +189,9 @@ class CalibrationWindow(QtWidgets.QWidget):
         self.radio_layout.addWidget(self.use_coefficients)
         cal_standard_layout.addRow(self.radio_layout)
 
-        self.file_button_short = QtWidgets.QPushButton("Short S1P file")
-        self.file_button_open = QtWidgets.QPushButton("Open S1P file")
-        self.file_button_load = QtWidgets.QPushButton("Load S1P file")
+        self.file_button_short = QtWidgets.QPushButton("Замкнутый S1P файл")
+        self.file_button_open = QtWidgets.QPushButton("Открытый S1P файл")
+        self.file_button_load = QtWidgets.QPushButton("Нагрузочный S1P файл")
         self.file_button_short.setEnabled(False)
         self.file_button_open.setEnabled(False)
         self.file_button_load.setEnabled(False)
@@ -198,7 +204,7 @@ class CalibrationWindow(QtWidgets.QWidget):
         self.file_button_short.clicked.connect(self.select_file_short)
         self.file_button_load.clicked.connect(self.select_file_load)
 
-        self.cal_short_box = QtWidgets.QGroupBox("Short")
+        self.cal_short_box = QtWidgets.QGroupBox("Замкнутая")
         cal_short_form = QtWidgets.QFormLayout(self.cal_short_box)
         self.cal_short_box.setDisabled(True)
         self.short_l0_input = QtWidgets.QLineEdit("0")
@@ -215,9 +221,9 @@ class CalibrationWindow(QtWidgets.QWidget):
         cal_short_form.addRow("L1 (H(e-24))", self.short_l1_input)
         cal_short_form.addRow("L2 (H(e-33))", self.short_l2_input)
         cal_short_form.addRow("L3 (H(e-42))", self.short_l3_input)
-        cal_short_form.addRow("Offset Delay (ps)", self.short_length)
+        cal_short_form.addRow("Задержка смещения (ps)", self.short_length)
 
-        self.cal_open_box = QtWidgets.QGroupBox("Open")
+        self.cal_open_box = QtWidgets.QGroupBox("Открытая")
         cal_open_form = QtWidgets.QFormLayout(self.cal_open_box)
         self.cal_open_box.setDisabled(True)
         self.open_c0_input = QtWidgets.QLineEdit("50")
@@ -234,9 +240,9 @@ class CalibrationWindow(QtWidgets.QWidget):
         cal_open_form.addRow("C1 (F(e-27))", self.open_c1_input)
         cal_open_form.addRow("C2 (F(e-36))", self.open_c2_input)
         cal_open_form.addRow("C3 (F(e-45))", self.open_c3_input)
-        cal_open_form.addRow("Offset Delay (ps)", self.open_length)
+        cal_open_form.addRow("Задержка смещени (ps)", self.open_length)
 
-        self.cal_load_box = QtWidgets.QGroupBox("Load")
+        self.cal_load_box = QtWidgets.QGroupBox("Нагрузочная")
         cal_load_form = QtWidgets.QFormLayout(self.cal_load_box)
         self.cal_load_box.setDisabled(True)
         self.load_resistance = QtWidgets.QLineEdit("50")
@@ -248,24 +254,28 @@ class CalibrationWindow(QtWidgets.QWidget):
         # self.load_capacitance.setDisabled(True)  # Not yet implemented
         self.load_length = QtWidgets.QLineEdit("0")
         self.load_length.setMinimumHeight(20)
-        cal_load_form.addRow("Resistance (\N{OHM SIGN})", self.load_resistance)
-        cal_load_form.addRow("Inductance (H(e-12))", self.load_inductance)
-        cal_load_form.addRow("Capacitance (F(e-15))", self.load_capacitance)
-        cal_load_form.addRow("Offset Delay (ps)", self.load_length)
+        cal_load_form.addRow(
+            "Сопротивление (\N{OHM SIGN})", self.load_resistance
+        )
+        cal_load_form.addRow("Индуктивность (H(e-12))", self.load_inductance)
+        cal_load_form.addRow("Ёмкость (F(e-15))", self.load_capacitance)
+        cal_load_form.addRow("Задержка смещени (ps)", self.load_length)
 
-        self.cal_through_box = QtWidgets.QGroupBox("Through")
+        self.cal_through_box = QtWidgets.QGroupBox("Сквозная")
         cal_through_form = QtWidgets.QFormLayout(self.cal_through_box)
         self.cal_through_box.setDisabled(True)
         self.through_length = QtWidgets.QLineEdit("0")
         self.through_length.setMinimumHeight(20)
-        cal_through_form.addRow("Offset Delay (ps)", self.through_length)
+        cal_through_form.addRow("Задержка смещени (ps)", self.through_length)
 
         cal_standard_layout.addWidget(self.cal_short_box)
         cal_standard_layout.addWidget(self.cal_open_box)
         cal_standard_layout.addWidget(self.cal_load_box)
         cal_standard_layout.addWidget(self.cal_through_box)
 
-        self.cal_standard_save_box = QtWidgets.QGroupBox("Saved settings")
+        self.cal_standard_save_box = QtWidgets.QGroupBox(
+            "Сохранённые настройки"
+        )
         cal_standard_save_layout = QtWidgets.QVBoxLayout(
             self.cal_standard_save_box
         )
@@ -276,13 +286,13 @@ class CalibrationWindow(QtWidgets.QWidget):
         self.listCalibrationStandards()
         cal_standard_save_layout.addWidget(self.cal_standard_save_selector)
         cal_standard_save_button_layout = QtWidgets.QHBoxLayout()
-        btn_save_standard = QtWidgets.QPushButton("Save")
+        btn_save_standard = QtWidgets.QPushButton("Сохранить")
         btn_save_standard.setMinimumHeight(20)
         btn_save_standard.clicked.connect(self.saveCalibrationStandard)
-        btn_load_standard = QtWidgets.QPushButton("Load")
+        btn_load_standard = QtWidgets.QPushButton("Загрузить")
         btn_load_standard.setMinimumHeight(20)
         btn_load_standard.clicked.connect(self.loadCalibrationStandard)
-        btn_delete_standard = QtWidgets.QPushButton("Delete")
+        btn_delete_standard = QtWidgets.QPushButton("Удалить")
         btn_delete_standard.setMinimumHeight(20)
         btn_delete_standard.clicked.connect(self.deleteCalibrationStandard)
         cal_standard_save_button_layout.addWidget(btn_load_standard)
@@ -300,18 +310,18 @@ class CalibrationWindow(QtWidgets.QWidget):
         if not self.app.settings.value("ExpertCalibrationUser", False, bool):
             response = QtWidgets.QMessageBox.question(
                 self,
-                "Are you sure?",
+                "Вы уверены?",
                 (
-                    "Use of the manual calibration buttons is non-intuitive"
-                    " and primarily suited for users with very specialized"
-                    " needs. The buttons do not sweep for you nor do"
-                    " they interact with the NanoVNA calibration.\n\n"
-                    "If you are trying to do a calibration of the NanoVNA, do"
-                    " so on the device itself instead. If you are trying to do"
-                    ' a calibration with NanoVNA-Saver, use the "Calibration'
-                    ' assistant" if possible.\n\n'
-                    "If you are certain you know what you are doing, click"
-                    " Yes."
+                    "Использование кнопок ручной калибровки неинтуитивно"
+                    " и в первую очередь подходит для пользователей с очень специализированными"
+                    " потребностями. Кнопки не подстраиваются под вас и не "
+                    " взаимодействуют с калибровкой NanoVNA.\n\n"
+                    "Если вы пытаетесь выполнить калибровку NanoVNA, делайте"
+                    " это на самом приборе. Если вы пытаетесь выполнить"
+                    ' калибровку с помощью NanoVNA-Saver, используйте "Калибратор"'
+                    " если это возможно.\n\n"
+                    "Если вы уверены, что знаете, что делаете, нажмите"
+                    " Да."
                 ),
                 QtWidgets.QMessageBox.StandardButton.Yes
                 | QtWidgets.QMessageBox.StandardButton.Cancel,
@@ -340,11 +350,11 @@ class CalibrationWindow(QtWidgets.QWidget):
         num_standards = self.app.settings.beginReadArray("CalibrationStandards")
         for i in range(num_standards):
             self.app.settings.setArrayIndex(i)
-            name = self.app.settings.value("Name", defaultValue="INVALID NAME")
+            name = self.app.settings.value("Name", defaultValue="НЕВЕРНОЕ ИМЯ")
             self.cal_standard_save_selector.addItem(name, userData=i)
         self.app.settings.endArray()
-        self.cal_standard_save_selector.addItem("New", userData=-1)
-        self.cal_standard_save_selector.setCurrentText("New")
+        self.cal_standard_save_selector.addItem("Новая", userData=-1)
+        self.cal_standard_save_selector.setCurrentText("Новая")
 
     def saveCalibrationStandard(self):
         num_standards = self.app.settings.beginReadArray("CalibrationStandards")
@@ -354,7 +364,7 @@ class CalibrationWindow(QtWidgets.QWidget):
             # New cal standard
             # Get a name
             name, selected = QtWidgets.QInputDialog.getText(
-                self, "Calibration standard name", "Enter name to save as"
+                self, "Имя калибровки", "Введите имя чтобы сохранить"
             )
             if not selected or not name:
                 return
@@ -526,9 +536,9 @@ class CalibrationWindow(QtWidgets.QWidget):
     def reset(self):
         self.app.calibration = Calibration()
         for label in self.cal_label.values():
-            label.setText("Uncalibrated")
-        self.calibration_status_label.setText("Device calibration")
-        self.calibration_source_label.setText("Device")
+            label.setText("Не калибровано")
+        self.calibration_status_label.setText("Калибровка устройства")
+        self.calibration_source_label.setText("Устройство")
         self.notes_textedit.clear()
         self.short_touchstone = None
         self.open_touchstone = None
@@ -568,15 +578,15 @@ class CalibrationWindow(QtWidgets.QWidget):
         cal_element = self.app.calibration.cal_element
         if self.app.sweep_control.btn_stop.isEnabled():
             self.app.showError(
-                "Unable to apply calibration while a sweep is running."
-                " Please stop the sweep and try again."
+                "Невозможно применить калибровку пока запущено измерение."
+                " Остановите измерение и попробуйте снова."
             )
             return
 
         if not self.app.calibration.isValid1Port():
             self.app.showError(
-                "Not enough data to apply calibration."
-                " Please complete SOL calibration and try again."
+                "Недостаточно данных чтобы применить калибровку."
+                " Пожалуйста завершите калибровку и попробуйте снова."
             )
             return
 
@@ -660,7 +670,7 @@ class CalibrationWindow(QtWidgets.QWidget):
             self.app.calibration.calc_corrections()
             self.calibration_status_label.setText(
                 _format_cal_label(
-                    self.app.calibration.size(), "Application calibration"
+                    self.app.calibration.size(), "Калибровка приложения"
                 )
             )
             if self.use_ideal_values.isChecked():
@@ -669,7 +679,7 @@ class CalibrationWindow(QtWidgets.QWidget):
                 )
             else:
                 self.calibration_source_label.setText(
-                    f"{self.app.calibration.source} (Standards: Custom)"
+                    f"{self.app.calibration.source} (Значения: Свои)"
                 )
 
             if self.app.worker.rawData11:
@@ -693,18 +703,18 @@ class CalibrationWindow(QtWidgets.QWidget):
             # showError here hides the calibration window,
             # so we need to pop up our own
             self.calibration_status_label.setText(
-                "Applying calibration failed."
+                "Ошибка применения калибровки."
             )
             self.calibration_source_label.setText(self.app.calibration.source)
             self.app.showError(
-                f"{e}" " Please complete SOL calibration and try again."
+                f"{e}" " Пожалуйста завершите калибровку и попробуйте снова."
             )
             self.reset()
             return
 
     def loadCalibration(self):
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(
-            filter="Calibration Files (*.cal);;All files (*.*)"
+            filter="Файлы калибровок (*.cal);;Все файлы (*.*)"
         )
         if filename:
             self.app.calibration.load(filename)
@@ -715,7 +725,7 @@ class CalibrationWindow(QtWidgets.QWidget):
         ):
             self.cal_label[name].setText(
                 _format_cal_label(
-                    self.app.calibration.data_size(name), "Loaded"
+                    self.app.calibration.data_size(name), "Загружено"
                 )
             )
             if i == 2 and not self.app.calibration.isValid2Port():
@@ -729,11 +739,11 @@ class CalibrationWindow(QtWidgets.QWidget):
     def saveCalibration(self):
         if not self.app.calibration.isCalculated:
             logger.debug("Attempted to save an uncalculated calibration.")
-            self.app.showError("Cannot save an unapplied calibration state.")
+            self.app.showError("Невозможно сохранить неприменённую калибровку.")
             return
         filedialog = QtWidgets.QFileDialog(self)
         filedialog.setDefaultSuffix("cal")
-        filedialog.setNameFilter("Calibration Files (*.cal);;All files (*.*)")
+        filedialog.setNameFilter("Файлы калибровок (*.cal);;Все файлы (*.*)")
         filedialog.setAcceptMode(QtWidgets.QFileDialog.AcceptMode.AcceptSave)
         if filedialog.exec():
             filename = filedialog.selectedFiles()[0]
@@ -750,7 +760,7 @@ class CalibrationWindow(QtWidgets.QWidget):
             self.app.settings.setValue("CalibrationFile", filename)
         except IOError:
             logger.error("Calibration save failed!")
-            self.app.showError("Calibration save failed.")
+            self.app.showError("Ошибка сохранения калибровки.")
 
     def calStandardChanged(self, button):
         if button == self.use_ideal_values:
