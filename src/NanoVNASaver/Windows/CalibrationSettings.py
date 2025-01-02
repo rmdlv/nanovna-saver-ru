@@ -48,7 +48,7 @@ class CalibrationWindow(QtWidgets.QWidget):
         super().__init__()
         self.app = app
 
-        self.setMinimumWidth(450)
+        self.setMinimumWidth(1000)
         self.setWindowTitle("Калибровка")
         self.setWindowIcon(self.app.icon)
         self.setSizePolicy(
@@ -166,7 +166,7 @@ class CalibrationWindow(QtWidgets.QWidget):
 
         left_layout.addWidget(file_box)
 
-        cal_standard_box = QtWidgets.QGroupBox("Калибровочные стандарты")
+        cal_standard_box = QtWidgets.QGroupBox("Калибровочные эталоны")
         cal_standard_layout = QtWidgets.QFormLayout(cal_standard_box)
         self.use_ideal_values = QtWidgets.QRadioButton(
             "Использовать идеальные значения"
