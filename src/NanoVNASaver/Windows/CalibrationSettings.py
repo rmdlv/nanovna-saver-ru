@@ -95,7 +95,7 @@ class CalibrationWindow(QtWidgets.QWidget):
             "сквозная-отражённая",
             "изолированная",
         ):
-            self.cal_label[label_name] = QtWidgets.QLabel("Не калибровано")
+            self.cal_label[label_name] = QtWidgets.QLabel("Не откалибровано")
             cal_btn[label_name] = QtWidgets.QPushButton(label_name.capitalize())
             cal_btn[label_name].setMinimumHeight(20)
             cal_btn[label_name].clicked.connect(
@@ -118,7 +118,7 @@ class CalibrationWindow(QtWidgets.QWidget):
             "Задержка смещения", self.input_offset_delay
         )
 
-        self.btn_automatic = QtWidgets.QPushButton("Калибратор")
+        self.btn_automatic = QtWidgets.QPushButton("Автоматический калибровщик")
         self.btn_automatic.setMinimumHeight(20)
         calibration_control_layout.addRow(self.btn_automatic)
         self.btn_automatic.clicked.connect(self.automaticCalibration)
@@ -312,16 +312,16 @@ class CalibrationWindow(QtWidgets.QWidget):
                 self,
                 "Вы уверены?",
                 (
-                    "Использование кнопок ручной калибровки неинтуитивно"
-                    " и в первую очередь подходит для пользователей с очень специализированными"
-                    " потребностями. Кнопки не подстраиваются под вас и не "
-                    " взаимодействуют с калибровкой NanoVNA.\n\n"
-                    "Если вы пытаетесь выполнить калибровку NanoVNA, делайте"
-                    " это на самом приборе. Если вы пытаетесь выполнить"
-                    ' калибровку с помощью NanoVNA-Saver, используйте "Калибратор"'
-                    " если это возможно.\n\n"
-                    "Если вы уверены, что знаете, что делаете, нажмите"
-                    " Да."
+                    "Использование кнопок ручной калибровки не интуитивно,"
+                    " и в основном подходит для пользователей с очень специализированными"
+                    " потребностями. Кнопки не подстраиваются под то, что вы делаете, "
+                    " и не взаимодействуют с калибровкой NanoVNA.\n\n"
+                    "Если вы пытаетесь откалибровать NanoVNA, делайте"
+                    " это на самом устройстве. Если вы пытаетесь"
+                    " произвести калибровку с помощью NanoVNA-Saver, то по возможности"
+                    ' используйте "Автоматический калибровщик".\n\n'
+                    "Если вы знаете, что вы делаете, нажмите"
+                    " Yes."
                 ),
                 QtWidgets.QMessageBox.StandardButton.Yes
                 | QtWidgets.QMessageBox.StandardButton.Cancel,
@@ -536,7 +536,7 @@ class CalibrationWindow(QtWidgets.QWidget):
     def reset(self):
         self.app.calibration = Calibration()
         for label in self.cal_label.values():
-            label.setText("Не калибровано")
+            label.setText("Не откалибровано")
         self.calibration_status_label.setText("Калибровка устройства")
         self.calibration_source_label.setText("Устройство")
         self.notes_textedit.clear()
@@ -795,20 +795,20 @@ class CalibrationWindow(QtWidgets.QWidget):
         self.btn_automatic.setDisabled(True)
         introduction = QtWidgets.QMessageBox(
             QtWidgets.QMessageBox.Icon.Information,
-            "Calibration assistant",
+            "Автоматический калибровщик",
             (
-                "This calibration assistant will help you create a calibration"
-                " in the NanoVNASaver application. It will sweep the"
-                " standards for you and guide you through the process.<br><br>"
-                "Before starting, ensure you have Open, Short and Load"
-                " standards available and the cables you wish to have"
-                " calibrated connected to the device.<br><br>"
-                'If you want a 2-port calibration, also have a "through"'
-                " connector on hand.<br><br>"
-                "<b>The best results are achieved by having the NanoVNA"
-                " calibrated on-device for the full span of interest and stored"
-                " in save slot 0 before starting.</b><br><br>"
-                "Once you are ready to proceed, press Ok."
+                "Этот автоматический калибровщик поможет вам произвести калибровку"
+                " в приложении NanoVNASaver. Он измерит ваши калибровочные"
+                " значения, и объяснит вам что нужно делать во время процесса.<br><br>"
+                "Перед тем как начать, убедитесь, что у вас имеется закрытый, открытый и нагрузочный"
+                " эталон, и кабели, которые вы сможете"
+                " подключить к устройству.<br><br>"
+                "Если вы хотите произвести двух-портовую калибровку, вам также потребуется"
+                " кабель.<br><br>"
+                "<b>Лучшие результаты на NanoVNA достигаются"
+                " калибровкой на самом устройстве для интересующего частотного диапазона, и сохранением"
+                " в слот 0 перед началом.</b><br><br>"
+                "Как только вы будете готовы, нажмите OK."
             ),
             QtWidgets.QMessageBox.StandardButton.Ok
             | QtWidgets.QMessageBox.StandardButton.Cancel,
@@ -821,10 +821,10 @@ class CalibrationWindow(QtWidgets.QWidget):
         if not self.app.vna.connected():
             QtWidgets.QMessageBox(
                 QtWidgets.QMessageBox.Icon.Information,
-                "NanoVNA not connected",
+                "NanoVNA не подключен",
                 (
-                    "Please ensure the NanoVNA is connected before attempting"
-                    " calibration."
+                    "Пожалуйста убедитесь, что NanoVNA подключен, перед тем как начать"
+                    " калибровку."
                 ),
             ).exec()
             self.btn_automatic.setDisabled(False)
@@ -833,10 +833,10 @@ class CalibrationWindow(QtWidgets.QWidget):
         if self.app.sweep.properties.mode == SweepMode.CONTINOUS:
             QtWidgets.QMessageBox(
                 QtWidgets.QMessageBox.Icon.Information,
-                "Continuous sweep enabled",
+                "Включено непрерывное измерение",
                 (
-                    "Please disable continuous sweeping before attempting"
-                    " calibration."
+                    "Пожалуйста отключите непрерывное измерение перед тем, как начать"
+                    " калибровку."
                 ),
             ).exec()
             self.btn_automatic.setDisabled(False)
@@ -844,11 +844,11 @@ class CalibrationWindow(QtWidgets.QWidget):
 
         short_step = QtWidgets.QMessageBox(
             QtWidgets.QMessageBox.Icon.Information,
-            "Calibrate short",
+            "Замкнутая калибровка",
             (
-                'Please connect the "short" standard to port 0 of the'
+                'Пожалуйста подключите "замкнутый" эталон к порту 0 на'
                 " NanoVNA.\n\n"
-                "Press Ok when you are ready to continue."
+                "Нажмите OK, когда вы будете готовы продолжить."
             ),
             QtWidgets.QMessageBox.StandardButton.Ok
             | QtWidgets.QMessageBox.StandardButton.Cancel,
@@ -859,7 +859,7 @@ class CalibrationWindow(QtWidgets.QWidget):
             self.btn_automatic.setDisabled(False)
             return
         self.reset()
-        self.app.calibration.source = "Calibration assistant"
+        self.app.calibration.source = "Автоматический калибровщик"
         self.next_step = 0
         self.app.worker.signals.finished.connect(self.automaticCalibrationStep)
         self.app.sweep_start()
@@ -879,13 +879,13 @@ class CalibrationWindow(QtWidgets.QWidget):
 
             open_step = QtWidgets.QMessageBox(
                 QtWidgets.QMessageBox.Icon.Information,
-                "Calibrate open",
+                "Открытая калибровка",
                 (
-                    'Please connect the "open" standard to port 0 of the'
+                    'Пожалуйста подключите "открытый" эталон к порту 0 на'
                     " NanoVNA.\n\n"
-                    "Either use a supplied open, or leave the end of the"
-                    " cable unconnected if desired.\n\n"
-                    "Press Ok when you are ready to continue."
+                    "Используйте заводской эталон, или оставьте конец"
+                    " кабеля не подключенным.\n\n"
+                    "Нажмите OK, когда вы будете готовы продолжить."
                 ),
                 QtWidgets.QMessageBox.StandardButton.Ok
                 | QtWidgets.QMessageBox.StandardButton.Cancel,
@@ -908,11 +908,11 @@ class CalibrationWindow(QtWidgets.QWidget):
             self.next_step = 2
             load_step = QtWidgets.QMessageBox(
                 QtWidgets.QMessageBox.Icon.Information,
-                "Calibrate load",
+                "Нагрузочная калибровка",
                 (
-                    'Please connect the "load" standard to port 0 of the'
+                    'Пожалуйста подключите "нагрузочный" эталон к порту 0 на'
                     " NanoVNA.\n\n"
-                    "Press Ok when you are ready to continue."
+                    "Нажмите OK, когда вы будете готовы продолжить."
                 ),
                 QtWidgets.QMessageBox.StandardButton.Ok
                 | QtWidgets.QMessageBox.StandardButton.Cancel,
@@ -935,13 +935,13 @@ class CalibrationWindow(QtWidgets.QWidget):
             self.next_step = 3
             continue_step = QtWidgets.QMessageBox(
                 QtWidgets.QMessageBox.Icon.Information,
-                "1-port calibration complete",
+                "Одно-портовая калибровка завершена",
                 (
-                    "The required steps for a 1-port calibration are now"
-                    " complete.\n\n"
-                    "If you wish to continue and perform a 2-port calibration,"
-                    ' press "Yes". To apply the 1-port calibration and stop,'
-                    ' press "Apply"'
+                    "Неообходимые шаги для одно-портовой калибровки"
+                    " завершены.\n\n"
+                    "Если вы хотите продолжить и произвести двух-портовую калибровку,"
+                    ' нажмите "Yes". Чтобы применить одно-портовую калибровку и закончить,'
+                    ' нажмите "Apply"'
                 ),
                 QtWidgets.QMessageBox.StandardButton.Yes
                 | QtWidgets.QMessageBox.StandardButton.Apply
@@ -967,13 +967,13 @@ class CalibrationWindow(QtWidgets.QWidget):
 
             isolation_step = QtWidgets.QMessageBox(
                 QtWidgets.QMessageBox.Icon.Information,
-                "Calibrate isolation",
+                "Изолированная калибровка",
                 (
-                    'Please connect the "load" standard to port 1 of the'
+                    'Пожалуйста подключите "нагрузочный" эталон к порту 1 на'
                     " NanoVNA.\n\n"
-                    "If available, also connect a load standard to"
-                    " port 0.\n\n"
-                    "Press Ok when you are ready to continue."
+                    "По возможности, также подключите нагрузочный эталон к"
+                    " порту 0.\n\n"
+                    "Нажмите OK, когда вы будете готовы продолжить."
                 ),
                 QtWidgets.QMessageBox.StandardButton.Ok
                 | QtWidgets.QMessageBox.StandardButton.Cancel,
@@ -996,11 +996,11 @@ class CalibrationWindow(QtWidgets.QWidget):
             self.next_step = 4
             through_step = QtWidgets.QMessageBox(
                 QtWidgets.QMessageBox.Icon.Information,
-                "Calibrate through",
+                "Сквозная калибровка",
                 (
-                    'Please connect the "through" standard between'
-                    " port 0 and port 1 of the NanoVNA.\n\n"
-                    "Press Ok when you are ready to continue."
+                    "Пожалуйста подключите кабель между"
+                    " портом 0 и портом 1 на NanoVNA.\n\n"
+                    "Нажмите OK, когда вы будете готовы продолжить."
                 ),
                 QtWidgets.QMessageBox.StandardButton.Ok
                 | QtWidgets.QMessageBox.StandardButton.Cancel,
@@ -1023,10 +1023,10 @@ class CalibrationWindow(QtWidgets.QWidget):
             self.cal_save("through")
             apply_step = QtWidgets.QMessageBox(
                 QtWidgets.QMessageBox.Icon.Information,
-                "Calibrate complete",
+                "Калибровка звершена",
                 (
-                    "The calibration process is now complete. Press"
-                    ' "Apply" to apply the calibration parameters.'
+                    "Процесс калибровки завершён. Нажмите"
+                    ' "Apply", чтобы применить параметры калибровки.'
                 ),
                 QtWidgets.QMessageBox.StandardButton.Apply
                 | QtWidgets.QMessageBox.StandardButton.Cancel,
@@ -1051,7 +1051,7 @@ class CalibrationWindow(QtWidgets.QWidget):
 
     def select_file_open(self):
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Select Open S1P", "", "Touchstone Files (*.s1p)"
+            self, "Выбрать Открытый S1P", "", "Файлы измерений (*.s1p)"
         )
         if filename != "":
             self.open_touchstone = Touchstone(filename)
@@ -1059,7 +1059,7 @@ class CalibrationWindow(QtWidgets.QWidget):
 
     def select_file_short(self):
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Select Short S1P", "", "Touchstone Files (*.s1p)"
+            self, "Выбрать Замкнутый S1P", "", "Файлы измерений (*.s1p)"
         )
         if filename != "":
             self.short_touchstone = Touchstone(filename)
@@ -1067,7 +1067,7 @@ class CalibrationWindow(QtWidgets.QWidget):
 
     def select_file_load(self):
         filename, _ = QtWidgets.QFileDialog.getOpenFileName(
-            self, "Select Load S1P", "", "Touchstone Files (*.s1p)"
+            self, "Выбрать Нагрузочный S1P", "", "Файлы измерений (*.s1p)"
         )
         if filename != "":
             self.load_touchstone = Touchstone(filename)

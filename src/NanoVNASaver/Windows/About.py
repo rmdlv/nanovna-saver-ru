@@ -110,7 +110,7 @@ class AboutWindow(QtWidgets.QWidget):
 
         lower_layout.addStretch()
 
-        btn_ok = QtWidgets.QPushButton("Ok")
+        btn_ok = QtWidgets.QPushButton("OK")
         btn_ok.clicked.connect(lambda: self.close())
         lower_layout.addWidget(btn_ok)
 

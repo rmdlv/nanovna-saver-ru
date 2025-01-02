@@ -36,16 +36,16 @@ class DeviceSettingsWindow(QtWidgets.QWidget):
         super().__init__()
 
         self.app = app
-        self.setWindowTitle("Device settings")
+        self.setWindowTitle("Настройки устройства")
         self.setWindowIcon(self.app.icon)
 
         QtGui.QShortcut(QtCore.Qt.Key.Key_Escape, self, self.hide)
 
         self.label = {
-            "status": QtWidgets.QLabel("Not connected."),
-            "firmware": QtWidgets.QLabel("Not connected."),
-            "calibration": QtWidgets.QLabel("Not connected."),
-            "SN": QtWidgets.QLabel("Not connected."),
+            "status": QtWidgets.QLabel("Не подключен."),
+            "firmware": QtWidgets.QLabel("Не подключен."),
+            "calibration": QtWidgets.QLabel("Не подключен."),
+            "SN": QtWidgets.QLabel("Не подключен."),
         }
 
         top_layout = QtWidgets.QHBoxLayout()
@@ -55,39 +55,39 @@ class DeviceSettingsWindow(QtWidgets.QWidget):
         top_layout.addLayout(right_layout)
         make_scrollable(self, top_layout)
 
-        status_box = QtWidgets.QGroupBox("Status")
+        status_box = QtWidgets.QGroupBox("Статус")
         status_layout = QtWidgets.QFormLayout(status_box)
 
-        status_layout.addRow("Status:", self.label["status"])
-        status_layout.addRow("Firmware:", self.label["firmware"])
-        status_layout.addRow("Calibration:", self.label["calibration"])
-        status_layout.addRow("SN:", self.label["SN"])
+        status_layout.addRow("Статус:", self.label["status"])
+        status_layout.addRow("Прошивка:", self.label["firmware"])
+        status_layout.addRow("Калибровка:", self.label["calibration"])
+        status_layout.addRow("Серийный номер:", self.label["SN"])
 
-        status_layout.addRow(QtWidgets.QLabel("Features:"))
+        status_layout.addRow(QtWidgets.QLabel("Возможности:"))
 
         self.featureList = QtWidgets.QListWidget()
         status_layout.addRow(self.featureList)
 
-        settings_box = QtWidgets.QGroupBox("Settings")
+        settings_box = QtWidgets.QGroupBox("Настройки")
         settings_layout = QtWidgets.QFormLayout(settings_box)
 
         self.chkValidateInputData = QtWidgets.QCheckBox(
-            "Validate received data"
+            "Проверять полученные данные"
         )
         validate_input = self.app.settings.value(
             "SerialInputValidation", False, bool
         )
         self.chkValidateInputData.setChecked(validate_input)
         self.chkValidateInputData.stateChanged.connect(self.updateValidation)
-        settings_layout.addRow("Validation", self.chkValidateInputData)
+        settings_layout.addRow("Проверка", self.chkValidateInputData)
 
         control_layout = QtWidgets.QHBoxLayout()
-        self.btnRefresh = QtWidgets.QPushButton("Refresh")
+        self.btnRefresh = QtWidgets.QPushButton("Обновить")
         self.btnRefresh.clicked.connect(self.updateFields)
         control_layout.addWidget(self.btnRefresh)
 
         self.screenshotWindow = ScreenshotWindow()
-        self.btnCaptureScreenshot = QtWidgets.QPushButton("Screenshot")
+        self.btnCaptureScreenshot = QtWidgets.QPushButton("Скриншот")
         self.btnCaptureScreenshot.clicked.connect(self.captureScreenshot)
         control_layout.addWidget(self.btnCaptureScreenshot)
 
@@ -98,7 +98,7 @@ class DeviceSettingsWindow(QtWidgets.QWidget):
         self.datapoints.addItem(str(self.app.vna.datapoints))
         self.datapoints.currentIndexChanged.connect(self.updateNrDatapoints)
 
-        self.custom_points_checkbox = QtWidgets.QCheckBox("Custom points")
+        self.custom_points_checkbox = QtWidgets.QCheckBox("Количество точек")
         self.custom_points_checkbox.stateChanged.connect(self.customPoint_check)
         self.custom_points_edit = QtWidgets.QLineEdit("101")
         self.custom_points_edit.setValidator(
@@ -114,9 +114,9 @@ class DeviceSettingsWindow(QtWidgets.QWidget):
         self.bandwidth.currentIndexChanged.connect(self.updateBandwidth)
 
         form_layout = QtWidgets.QFormLayout()
-        form_layout.addRow(QtWidgets.QLabel("Datapoints"), self.datapoints)
+        form_layout.addRow(QtWidgets.QLabel("Точки данных"), self.datapoints)
         form_layout.addRow(self.custom_points_checkbox, self.custom_points_edit)
-        form_layout.addRow(QtWidgets.QLabel("Bandwidth"), self.bandwidth)
+        form_layout.addRow(QtWidgets.QLabel("Ширина полосы"), self.bandwidth)
         right_layout.addWidget(settings_box)
         settings_layout.addRow(form_layout)
 
@@ -132,20 +132,20 @@ class DeviceSettingsWindow(QtWidgets.QWidget):
 
     def updateFields(self):
         if not self.app.vna.connected():
-            self.label["status"].setText("Not connected.")
-            self.label["firmware"].setText("Not connected.")
-            self.label["calibration"].setText("Not connected.")
-            self.label["SN"].setText("Not connected.")
+            self.label["status"].setText("Не подключен.")
+            self.label["firmware"].setText("Не подключен.")
+            self.label["calibration"].setText("Не подключен.")
+            self.label["SN"].setText("Не подключен.")
             self.featureList.clear()
             self.btnCaptureScreenshot.setDisabled(True)
             return
 
-        self.label["status"].setText(f"Connected to {self.app.vna.name}.")
+        self.label["status"].setText(f"Подключено к {self.app.vna.name}.")
         self.label["firmware"].setText(
             f"{self.app.vna.name} v{self.app.vna.version}"
         )
         if self.app.worker.state == SweepState.RUNNING:
-            self.label["calibration"].setText("(Sweep running)")
+            self.label["calibration"].setText("(Запущено измерение)")
         else:
             self.label["calibration"].setText(self.app.vna.getCalibration())
         self.label["SN"].setText(self.app.vna.SN)
